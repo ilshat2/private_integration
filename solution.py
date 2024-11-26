@@ -15,6 +15,7 @@ MANAGERS_CHAT_IDS = {
 
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
+
 # Получение данных из amoCRM
 def get_revenue_data():
     headers = {
@@ -35,7 +36,9 @@ def get_revenue_data():
             revenue_by_manager[manager_id] = price
     
     # Получение имен менеджеров
-    response_users = requests.get(f"{AMOCRM_BASE_URL}/api/v4/users", headers=headers)
+    response_users = requests.get(
+        f"{AMOCRM_BASE_URL}/api/v4/users", headers=headers
+        )
     users = response_users.json()["_embedded"]["users"]
     manager_names = {user["id"]: user["name"] for user in users}
 
@@ -47,6 +50,7 @@ def get_revenue_data():
 
     return report
 
+
 # Отправка данных в Telegram
 def send_daily_report():
     report = get_revenue_data()
@@ -56,6 +60,7 @@ def send_daily_report():
         chat_id = MANAGERS_CHAT_IDS.get(manager)
         if chat_id:
             bot.send_message(chat_id=chat_id, text=message)
+
 
 # Планирование отправки
 schedule.every().day.at("09:00").do(send_daily_report)
